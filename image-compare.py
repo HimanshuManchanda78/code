@@ -9,32 +9,62 @@ def extract_text(image_path: str) -> str:
         image_data = base64.b64encode(f.read()).decode("utf-8")
 
     response = ollama.chat(
-        model="qwen2.5vl:7b",  # Using larger model for better analysis
+        model="minicpm-v",  # Faster 3B model - good balance of speed and accuracy
         messages=[{
             "role": "user",
-            "content": """You are a Senior Actuary at an insurance company like AON performing data validation.
+            "content": """ROLE: You are a Senior Actuary at AON Insurance performing critical data quality review. 
+Errors in insurance data can cost millions and damage AON's reputation. Be extremely thorough.
 
-CAREFULLY analyze this screenshot and look for these specific issues:
+STEP 1 - READ ALL DATA:
+List every number you see in tables, charts, and labels. Include:
+- All values in data tables (row by row)
+- All data points in charts/graphs
+- All percentages shown
+- All totals and subtotals
 
-1. **Numerical Outliers**: Look at ALL numbers in tables. If one value is 10x higher or lower than similar values in the same column, FLAG IT.
+STEP 2 - VALIDATE EACH CHECK:
 
-2. **Chart Spikes**: In any line/bar chart, if one data point is dramatically higher or lower than others, FLAG IT.
+CHECK A - Column Consistency:
+For each column in tables, list all values. Flag if ANY value is more than 3x different from others in same column.
+Example: If most values are $4,000-$5,000 but one is $45,000, that's a RED FLAG.
 
-3. **Data Inconsistencies**: Check if totals match the sum of parts. Check if averages make sense.
+CHECK B - Chart Anomalies:
+In line/bar charts, identify the typical range. Flag any spike or dip that's more than 2x the average.
+Example: If monthly values are around 2.0-2.5 but one month shows 8.5, that's a RED FLAG.
 
-4. **Suspicious Patterns**: Any value that seems wrong compared to its neighbors.
+CHECK C - Mathematical Validation:
+- Do percentages in pie charts add up to 100%?
+- Do regional totals add up to the grand total shown?
+- Is the average shown consistent with the individual values?
 
-READ EVERY NUMBER in the image. Compare each value to others in the same category.
+CHECK D - Loss Ratio Review:
+Loss ratios in insurance typically range 55-75%. Flag any outside 50-80% range.
 
-OUTPUT FORMAT:
-- First, list ALL numbers you see in the image
-- Then, identify ANY value that looks unusual or suspicious
-- For each issue found, explain WHY it's suspicious
+CHECK E - Cross-Reference:
+Compare related metrics. If claims are high but payouts are low (or vice versa), flag it.
 
-If you find issues, start with: "ALERT - Issues detected:"
-If everything looks normal, start with: "DATA VALIDATED - No issues found"
+STEP 3 - OUTPUT FORMAT:
 
-Be thorough and skeptical. Assume there ARE hidden errors to find.""",
+If issues found:
+```
+🚨 ALERT - DATA VALIDATION FAILED
+
+Issue 1: [Specific location] - [Exact problematic value] vs [Expected range]
+         WHY: [Explanation]
+
+Issue 2: [Specific location] - [Exact problematic value] vs [Expected range]  
+         WHY: [Explanation]
+
+RECOMMENDATION: [What should be verified]
+```
+
+If no issues:
+```
+✅ DATA VALIDATED - All checks passed
+Summary: [Brief confirmation of what was checked]
+```
+
+NOW ANALYZE THE IMAGE CAREFULLY. Read every single number.""",
             "images": [image_data]
         }]
     )
