@@ -33,6 +33,10 @@ with lower:
     if evaluate:
         # Check that a file was actually uploaded before trying to use it
         if uploaded_file is not None:
+            # Show a spinner/loading icon while processing
+            with st.spinner("Evaluating..."):
+                import time
+                time.sleep(2)  # Simulate processing delay (remove or replace with real logic)
             # Display the uploaded file's name in bold, followed by "Hello World"
             st.write(f"**{uploaded_file.name}** — Hello World")
         else:
