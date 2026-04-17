@@ -1,3 +1,5 @@
+#pkill -f "streamlit run" 2>/dev/null; sleep 1; cd /home/himanshu/Desktop/visualval && streamlit run app.py --server.headless true
+
 import streamlit as st
 
 # Use wide layout so the page stretches across the full browser width
@@ -22,8 +24,8 @@ with upper:
 st.divider()
 
 # --- Lower Part (80%) ---
-# Create a fixed-height container for the lower section (80% of 600px = 480px).
-lower = st.container(height=int(0.80 * 600), border=False)
+# Create a fixed-height container for the lower section (80% of 900px = 720px).
+lower = st.container(height=int(0.80 * 900), border=False)
 
 # Everything inside this 'with' block is rendered inside the lower container
 with lower:
