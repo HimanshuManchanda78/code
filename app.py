@@ -5,6 +5,23 @@ import streamlit as st
 # Use wide layout so the page stretches across the full browser width
 st.set_page_config(layout="wide")
 
+# --- Password Protection ---
+APP_PASSWORD = "visualval123"  # Change this to your desired password
+
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    st.title("Login")
+    password = st.text_input("Enter password", type="password")
+    if st.button("Submit"):
+        if password == APP_PASSWORD:
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("Incorrect password.")
+    st.stop()
+
 # --- Upper Part (20%) ---
 # Create a fixed-height container for the upper section (20% of 900px = 180px).
 # border=False hides the container's border so it looks seamless.
